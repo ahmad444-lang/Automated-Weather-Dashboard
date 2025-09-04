@@ -1,0 +1,35 @@
+name: Weather Update
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Run every 30 minutes
+  push:
+    branches:
+      - main
+
+jobs:
+  update-weather:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run weather update
+        run: python update_weathers.py
+
+      - name: Commit and Push updated JSON
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add weather.json
+          git commit -m "Update weather data [ci skip]" || echo "No changes"
+          git push
