@@ -1,0 +1,32 @@
+name: Update Weather
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # har 30 minute
+  workflow_dispatch:
+
+jobs:
+  update-weather-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run weather update script
+        run: python update_weathers.py
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add weather.json
+          git commit -m "Auto-update weather"
+          git push
